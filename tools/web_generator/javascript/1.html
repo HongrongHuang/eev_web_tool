@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+	<head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>Horizontal Bar Chart</title>
+		<script src="http://www.chartjs.org/assets/Chart.min.js"></script>
+    <script src="Chart.HorizontalBar.js"></script>
+	</head>
+	<body>
+        <h1>Labcar Function Test Result</h1>
+        <h3>Source file:</h3>
+        <a href="{%sourcefilepathandname%}">
+        {%sourcefilename%}</a>
+        <h3>Source file folder:</h3>
+        <a href="{%sourcepathlink%}">
+        {%sourcepath%}</a>
+        <h4>
+        <font color="#009000">Green: Pass</font>;
+        <font color="#F02000">Red: Failed</font>;
+        <font color="#CCCCCC">Gray: NotTest</font>
+        </h4>
+        <h4>IE 6,7,8 cannot display the following chart. Please update your IE browser or use other web browser.</h4>
+		<div style="width: 50%">
+			<canvas id="canvas" height="
+            {%height%}
+            " width="600"></canvas>
+		</div>
+
+
+		<script>
+
+	  	var randomScalingFactor = function(){
+	      return Math.round(Math.random()*100);
+	    };
+
+        var all_data = 
+                        {%chart_data%}
+						;
+	  	var barChartData = {
+	  		labels : all_data[0],
+	  		datasets : [
+	  			{
+	  				fillColor : "#009000",
+	  				strokeColor : "#00A000",
+	  				highlightFill: "#00B000",
+	  				highlightStroke: "#00C000",
+	  				data : all_data[1]
+	  			},
+	  			{
+	  				fillColor : "#F02000",
+	  				strokeColor : "#E02000",
+	  				highlightFill: "#D02000",
+	  				highlightStroke: "#C02000",
+	  				data : all_data[2]
+	  			},
+	  			{
+	  				fillColor : "#CCCCCC",
+	  				strokeColor : "#BBBBBB",
+	  				highlightFill : "#AAAAAA",
+	  				highlightStroke : "#999999",
+	  				data : all_data[3]
+	  			}
+	  		]
+
+	  	};
+
+	  	window.onload = function(){
+	      var ctx = document.getElementById("canvas").getContext("2d");
+
+	      var chart = new Chart(ctx).HorizontalBar(barChartData, {
+            responsive: true,
+	        barShowStroke: false
+	  		});
+	  	};
+
+		</script>
+	</body>
+</html>
