@@ -48,21 +48,55 @@ class website:
                 
     
     def modify_table_data(self, chart_data):
+        table_head = '<table border="1">\n'
+        table_end = '</table>\n'
+        
+        row_head = '<tr>\n'
+        row_head_red = '<tr bgcolor="#F02000">\n'
+        row_head_gray = '<tr bgcolor="#CCCCCC">\n'
+        row_end = '</tr>\n'
+        
+        cell_head = '<td>'
+        cell_end = '</td>\n'
+        
+        
         for idx, line in enumerate(self.content):
             #print line
-            if '{%table%}' in line or True:
-                temp_list_name = []
-                temp_list_pass = []
-                temp_list_fail = []
-                temp_list_nottest = []
-                for item in chart_data:
-                    temp_list_name.append(item['Function Group'])
-                    temp_list_pass.append(item['Pass'])
-                    temp_list_fail.append(item['Fail'])
-                    temp_list_nottest.append(item['Not Test'])
-                new_data_in_list = [temp_list_name, temp_list_pass, temp_list_fail, temp_list_nottest]
+            if '{%htmltable%}' in line:
+
+                htmltablestring = ''
+                htmltablestring += table_head
                 
-                new_content = str(new_data_in_list)
+                htmltablestring += row_head
+                htmltablestring += cell_head + 'Function Group' + cell_end
+                htmltablestring += cell_head + 'Pass' + cell_end
+                htmltablestring += cell_head + 'Fail' + cell_end
+                htmltablestring += cell_head + 'Not Test' + cell_end
+                htmltablestring += cell_head + 'None' + cell_end
+                htmltablestring += cell_head + 'Remark' + cell_end
+                htmltablestring += row_end
+                
+                for item in chart_data:
+                    print item
+                    if item['Fail'] != 0:
+                        htmltablestring += row_head_red
+                    elif item['Not Test'] != 0:
+                        htmltablestring += row_head_gray
+                    else:
+                        htmltablestring += row_head
+                    
+                    htmltablestring += cell_head + str(item['Function Group']) + cell_end
+                    htmltablestring += cell_head + str(item['Pass']) + cell_end
+                    htmltablestring += cell_head + str(item['Fail']) + cell_end
+                    htmltablestring += cell_head + str(item['Not Test']) + cell_end
+                    htmltablestring += cell_head + str(item['None']) + cell_end
+                    htmltablestring += cell_head + str(item['Remark']) + cell_end
+                    
+                    htmltablestring += row_end
+                htmltablestring += table_end
+                
+                new_content = str(htmltablestring)
+                self.content[idx] = self.content[idx].replace('{%htmltable%}', new_content)
                 
     def modify_chart_data(self, chart_data):
         for idx, line in enumerate(self.content):
@@ -127,17 +161,21 @@ def test():
 if __name__ == "__main__":
 
     print "hello world!"
-    newweb = website(r'D:\workspace\web\1.html')
+    
+    chart_html_template = os.path.join(os.path.dirname(__file__), 'template', 'chart.html')
+    newweb = website(chart_html_template)
     
     import process_testresults
     excelpath = r'\\CTCS-NOT-0118\huanghongrong\M31T FRS5.0 System Test Report_20170511.xlsx'
-    excelpath = r'\\192.168.1.102\eclipse_workspace\M31T FRS5.0 System Test Report_20170511.xlsx'
     #excelpath = r'\\10.170.2.9\file_share_vol\D03_EE&Info&Con&Cloud\3.Electrical & Electronics\3.5 EEV\3.5.5 Labcar\04_TestCase\FRS5.0\FT\Test Case\M31T FRS5.0 System Test Report_20170511.xlsx'
     excelpath = r'D:\report.xlsx'
     excelpath = r'\\192.168.1.102\eclipse_workspace\report.xlsx'
+    excelpath = r'\\192.168.1.102\eclipse_workspace\M31T FRS5.0 System Test Report_20170511.xlsx'
     new_xl = process_testresults.testresults(excelpath)
-    result_data = new_xl.get_all_importent_data()
+    result_data, result_data_detail = new_xl.get_all_importent_data()
+    
     newweb.modify_chart_data(result_data)
+    newweb.modify_table_data(result_data_detail)
     
     newweb.set_data_source_path(excelpath)
     #newweb.save_change(r'D:\workspace\web\index.html')
